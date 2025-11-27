@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSAKA VIBES | 大阪グルメ×観光ガイド</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <meta name="description" content="大阪を拠点とするグルメ・観光インフルエンサーの公式ポートフォリオサイト。">
+    
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
               osaka: {
-                red: '#FF3300', // A sharper, more modern red
+                red: '#FF3300',
                 black: '#111111',
                 gray: '#F4F4F5',
                 light: '#FAFAFA'
@@ -26,17 +31,13 @@
             },
             animation: {
               'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-              'scroll': 'scroll 15s linear infinite',
               'slide-down': 'slideDown 1.5s ease-in-out infinite',
+              'pulse-slow': 'pulse 10s ease-in-out infinite',
             },
             keyframes: {
               fadeInUp: {
                 '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              scroll: {
-                '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-100%)' },
               },
               slideDown: {
                 '0%': { transform: 'translateY(-100%)' },
@@ -47,32 +48,66 @@
         }
       }
     </script>
+
     <style>
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #e5e5e5; 
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #FF3300; 
-      }
-      .glass-nav {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-      }
-      body {
-        font-feature-settings: "palt";
-      }
+        /* Base Styles */
+        body { 
+            font-feature-settings: "palt"; 
+            -webkit-font-smoothing: antialiased; 
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF3300; }
+        
+        /* Glass Navigation Effect */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+
+        /* Page Transitions */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in;
+        }
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            animation: fadeInPage 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Menu */
+        #mobile-menu {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #mobile-menu.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Utility */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
@@ -84,7 +119,604 @@
 }
 </script>
 </head>
-  <body class="bg-white text-osaka-black antialiased selection:bg-osaka-red selection:text-white font-sans">
-    <div id="root"></div>
-  </body>
+<body class="bg-white text-osaka-black font-sans flex flex-col min-h-screen selection:bg-osaka-red selection:text-white">
+
+    <!-- === HEADER === -->
+    <header id="main-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-6 md:py-8">
+        <div class="container mx-auto px-6 md:px-12 flex justify-between items-center">
+            
+            <!-- LOGO -->
+            <a href="#home" class="relative z-50 group" id="logo-link" onclick="handleLinkClick('home')">
+                <span class="font-black text-2xl tracking-tighter transition-colors duration-300 text-white" id="logo-text">
+                    OSAKA VIBES<span class="text-osaka-red">.</span>
+                </span>
+            </a>
+
+            <!-- DESKTOP NAV -->
+            <nav class="hidden md:flex items-center gap-10">
+                <a href="#about" onclick="handleLinkClick('about')" class="nav-link text-xs font-bold tracking-[0.2em] text-white/90 hover:text-osaka-red transition-colors relative group">
+                    ABOUT
+                    <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-osaka-red transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100"></span>
+                </a>
+                <a href="#services" onclick="handleLinkClick('services')" class="nav-link text-xs font-bold tracking-[0.2em] text-white/90 hover:text-osaka-red transition-colors relative group">
+                    SERVICES
+                    <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-osaka-red transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100"></span>
+                </a>
+                <a href="#portfolio" onclick="handleLinkClick('portfolio')" class="nav-link text-xs font-bold tracking-[0.2em] text-white/90 hover:text-osaka-red transition-colors relative group">
+                    PORTFOLIO
+                    <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-osaka-red transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100"></span>
+                </a>
+                <a href="#contact" onclick="handleLinkClick('contact')" class="px-6 py-2.5 rounded-full text-xs font-bold tracking-widest transition-all duration-300 bg-white text-osaka-black hover:bg-osaka-red hover:text-white flex items-center gap-2" id="contact-btn">
+                    CONTACT 
+                    <!-- SVG Arrow Icon -->
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                </a>
+            </nav>
+
+            <!-- MOBILE MENU TOGGLE -->
+            <button id="menu-toggle" class="md:hidden relative z-50 p-2 -mr-2 text-white transition-colors duration-300 focus:outline-none" onclick="toggleMenu()">
+                <!-- Hamburger Icon -->
+                <svg id="icon-menu" class="w-8 h-8 block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                <!-- Close Icon (Hidden initially) -->
+                <svg id="icon-close" class="w-8 h-8 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- MOBILE MENU OVERLAY -->
+        <div id="mobile-menu" class="fixed inset-0 bg-white z-40 flex flex-col justify-center items-center gap-8">
+            <a href="#home" class="mobile-link text-4xl font-black text-osaka-black hover:text-osaka-red tracking-tighter transition-colors" onclick="handleLinkClick('home')">HOME</a>
+            <a href="#about" class="mobile-link text-4xl font-black text-osaka-black hover:text-osaka-red tracking-tighter transition-colors" onclick="handleLinkClick('about')">ABOUT</a>
+            <a href="#services" class="mobile-link text-4xl font-black text-osaka-black hover:text-osaka-red tracking-tighter transition-colors" onclick="handleLinkClick('services')">SERVICES</a>
+            <a href="#portfolio" class="mobile-link text-4xl font-black text-osaka-black hover:text-osaka-red tracking-tighter transition-colors" onclick="handleLinkClick('portfolio')">PORTFOLIO</a>
+            <a href="#contact" class="mobile-link text-4xl font-black text-osaka-red tracking-tighter mt-4 transition-colors" onclick="handleLinkClick('contact')">CONTACT</a>
+        </div>
+    </header>
+
+    <!-- === MAIN CONTENT === -->
+    <main class="flex-grow w-full">
+        
+        <!-- === HOME PAGE === -->
+        <div id="page-home" class="page-section active">
+            <!-- Hero Section -->
+            <section class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-osaka-black">
+                <div class="absolute inset-0 z-0 opacity-70">
+                    <img src="https://images.unsplash.com/photo-1590559899731-a3828395a49a?q=80&w=2070&auto=format&fit=crop" alt="Osaka" class="w-full h-full object-cover scale-105 animate-pulse-slow">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80"></div>
+                </div>
+                <div class="relative z-10 container mx-auto px-6 md:px-12 pt-20">
+                    <div class="max-w-4xl">
+                        <p class="text-osaka-red font-bold tracking-[0.3em] text-xs md:text-sm mb-6 animate-fade-in-up">FREELANCE INFLUENCER / GUIDE</p>
+                        <h1 class="text-6xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tighter mb-8 animate-fade-in-up" style="animation-delay: 200ms;">
+                            OSAKA<br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">IS YOUR</span><br>
+                            STAGE<span class="text-osaka-red">.</span>
+                        </h1>
+                        <p class="text-gray-300 text-base md:text-lg max-w-lg leading-loose font-jp font-medium animate-fade-in-up" style="animation-delay: 400ms;">
+                            食と、街と、エンターテインメント。<br>
+                            大阪の「熱狂」を、世界基準のクリエイティブで切り取る。<br>
+                            この街のすべてが、私のスタジオです。
+                        </p>
+                        <div class="mt-12 flex gap-6 animate-fade-in-up" style="animation-delay: 600ms;">
+                             <a href="#portfolio" onclick="handleLinkClick('portfolio')" class="bg-white text-osaka-black px-8 py-4 rounded-full font-bold text-xs tracking-widest hover:bg-osaka-red hover:text-white transition-colors">VIEW WORKS</a>
+                             <a href="#about" onclick="handleLinkClick('about')" class="border border-white/30 text-white px-8 py-4 rounded-full font-bold text-xs tracking-widest hover:bg-white hover:text-osaka-black transition-colors">ABOUT ME</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Scroll Indicator -->
+                <div class="absolute bottom-12 right-6 md:right-12 flex items-center gap-4 text-white/60 animate-fade-in-up" style="animation-delay: 800ms;">
+                    <span class="text-[10px] tracking-widest font-bold rotate-90 origin-right translate-x-2">SCROLL</span>
+                    <div class="w-[1px] h-24 bg-white/20 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1/2 bg-white animate-slide-down"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Digest: About -->
+            <section class="py-24 bg-white">
+                <div class="container mx-auto px-6 md:px-12">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop" alt="Profile" class="rounded-3xl shadow-2xl w-full h-[400px] object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                        <div class="md:w-1/2">
+                            <span class="text-osaka-red font-bold tracking-widest text-xs mb-4 block">WHO I AM</span>
+                            <h2 class="text-4xl md:text-5xl font-black text-osaka-black mb-6 tracking-tighter leading-tight">Creating Culture,<br>Not Just Content.</h2>
+                            <p class="text-gray-600 mb-8 font-jp leading-loose">
+                                ただの「紹介」で終わらせない。その場所にあるストーリー、空気感、そして熱量を、シネマティックな映像と言葉で紡ぎ出します。大阪・関西を中心に、観光局、ホテル、飲食店など50社以上のPR実績を持つクリエイターです。
+                            </p>
+                            <a href="#about" onclick="handleLinkClick('about')" class="inline-flex items-center gap-2 font-bold text-sm tracking-widest border-b border-osaka-black pb-1 hover:text-osaka-red hover:border-osaka-red transition-all">
+                                READ MORE 
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Digest: CTA -->
+            <section class="py-32 bg-osaka-red text-white text-center">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-none">SEE THE<br>WORLD.</h2>
+                    <a href="#portfolio" onclick="handleLinkClick('portfolio')" class="bg-white text-osaka-red px-10 py-5 rounded-full font-bold text-sm tracking-widest hover:bg-osaka-black hover:text-white transition-colors shadow-2xl inline-block">
+                        OPEN PORTFOLIO
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- === ABOUT PAGE === -->
+        <div id="page-about" class="page-section">
+            <div class="pt-24 min-h-screen bg-white">
+                <div class="bg-osaka-light py-20 border-b border-gray-100">
+                    <div class="container mx-auto px-6 md:px-12">
+                        <h1 class="text-5xl md:text-7xl font-black text-osaka-black tracking-tighter mb-4">ABOUT ME</h1>
+                        <p class="text-gray-500 font-bold tracking-widest text-xs md:text-sm">THE STORY BEHIND OSAKA VIBES</p>
+                    </div>
+                </div>
+                <section class="py-24">
+                    <div class="container mx-auto px-6 md:px-12">
+                        <div class="flex flex-col lg:flex-row gap-16 mb-24 items-start">
+                            <div class="lg:w-1/2">
+                                <span class="inline-block py-1 px-3 border border-osaka-black rounded-full text-[10px] font-bold tracking-widest mb-6 bg-osaka-black text-white">PHILOSOPHY</span>
+                                <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-[1.1] text-osaka-black mb-10">
+                                    BEYOND<br>THE HYPE<span class="text-osaka-red">.</span>
+                                </h2>
+                                <div class="space-y-6 text-gray-600 font-jp leading-loose">
+                                    <p>SNSでバズることは、ゴールではありません。私のミッションは、大阪という街が持つエネルギーを長く愛される「ブランド」として確立することです。</p>
+                                    <p>元Web広告代理店のディレクターとしての経験を活かし、数値に基づいた戦略と、感性を刺激するクリエイティブを融合します。</p>
+                                </div>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <div class="bg-osaka-light p-8 rounded-3xl border border-gray-100">
+                                    <div class="flex gap-6 items-start">
+                                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop" class="w-20 h-20 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-bold text-xl mb-1">OSAKA VIBES / Kenta</p>
+                                            <p class="text-sm text-gray-500 font-jp leading-relaxed">
+                                                1995年 大阪市生まれ。東京の広告代理店にてSNSマーケティングに従事した後、2020年にUターン独立。
+                                                年間50社以上のPRを手がける。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
+                            <div class="bg-osaka-black text-white p-8 rounded-2xl">
+                                <span class="text-3xl font-black block">150K+</span>
+                                <span class="text-xs text-gray-400 font-bold uppercase">Followers</span>
+                            </div>
+                            <div class="bg-gray-100 text-osaka-black p-8 rounded-2xl">
+                                <span class="text-3xl font-black block">50M+</span>
+                                <span class="text-xs text-gray-400 font-bold uppercase">Total Views</span>
+                            </div>
+                            <div class="bg-gray-100 text-osaka-black p-8 rounded-2xl">
+                                <span class="text-3xl font-black block">50+</span>
+                                <span class="text-xs text-gray-400 font-bold uppercase">Clients</span>
+                            </div>
+                            <div class="bg-osaka-red text-white p-8 rounded-2xl">
+                                <span class="text-3xl font-black block">4.9</span>
+                                <span class="text-xs text-white/80 font-bold uppercase">Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- === SERVICES PAGE === -->
+        <div id="page-services" class="page-section">
+            <div class="pt-24 min-h-screen bg-osaka-light">
+                <div class="bg-osaka-black text-white py-20">
+                    <div class="container mx-auto px-6 md:px-12">
+                        <h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-4">SERVICES</h1>
+                        <p class="text-gray-400 font-bold tracking-widest text-xs md:text-sm">WHAT I CAN DO FOR YOU</p>
+                    </div>
+                </div>
+                <div class="container mx-auto px-6 md:px-12 py-24">
+                    <div id="services-grid" class="grid grid-cols-1 gap-6">
+                        <!-- JS Rendered -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === PORTFOLIO PAGE === -->
+        <div id="page-portfolio" class="page-section">
+            <div class="pt-24 min-h-screen bg-osaka-black text-white">
+                <div class="py-20 border-b border-white/10">
+                    <div class="container mx-auto px-6 md:px-12">
+                        <h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-4">PORTFOLIO</h1>
+                        <p class="text-gray-400 font-bold tracking-widest text-xs md:text-sm">SELECTED WORKS</p>
+                    </div>
+                </div>
+                <div class="container mx-auto px-6 md:px-12 py-12">
+                    <div class="flex justify-end mb-16">
+                        <div class="flex gap-2 flex-wrap" id="portfolio-filters">
+                            <button class="filter-btn bg-white text-osaka-black px-5 py-2 rounded-full text-xs font-bold" data-cat="All">All</button>
+                            <button class="filter-btn bg-transparent border border-gray-700 text-gray-400 px-5 py-2 rounded-full text-xs font-bold" data-cat="Gourmet">Gourmet</button>
+                            <button class="filter-btn bg-transparent border border-gray-700 text-gray-400 px-5 py-2 rounded-full text-xs font-bold" data-cat="Tourism">Tourism</button>
+                            <button class="filter-btn bg-transparent border border-gray-700 text-gray-400 px-5 py-2 rounded-full text-xs font-bold" data-cat="Hotel">Hotel</button>
+                        </div>
+                    </div>
+                    <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+                        <!-- JS Rendered -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === CONTACT PAGE === -->
+        <div id="page-contact" class="page-section">
+            <div class="pt-24 min-h-screen bg-white">
+                <div class="py-20 border-b border-gray-100">
+                    <div class="container mx-auto px-6 md:px-12 text-center">
+                        <h1 class="text-5xl md:text-7xl font-black text-osaka-black tracking-tighter mb-4">CONTACT</h1>
+                    </div>
+                </div>
+                <div class="container mx-auto px-6 md:px-12 py-24 max-w-2xl">
+                    <form class="space-y-8" onsubmit="event.preventDefault(); alert('Sent!');">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Name</label>
+                            <input type="text" class="w-full bg-osaka-light border-b-2 border-gray-200 p-4 outline-none focus:border-osaka-black font-sans">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Email</label>
+                            <input type="email" class="w-full bg-osaka-light border-b-2 border-gray-200 p-4 outline-none focus:border-osaka-black font-sans">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Message</label>
+                            <textarea rows="4" class="w-full bg-osaka-light border-b-2 border-gray-200 p-4 outline-none focus:border-osaka-black font-jp"></textarea>
+                        </div>
+                        <button class="w-full bg-osaka-black text-white py-5 rounded-full font-bold tracking-widest hover:bg-osaka-red transition-colors">SEND MESSAGE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-osaka-black text-white py-16 border-t border-white/10">
+        <div class="container mx-auto px-6 text-center">
+            <div class="text-3xl font-black tracking-tighter mb-6">OSAKA VIBES<span class="text-osaka-red">.</span></div>
+            <div class="flex justify-center gap-8 text-xs font-bold tracking-widest text-gray-400">
+                <a href="#home" onclick="handleLinkClick('home')" class="hover:text-white">HOME</a>
+                <a href="#about" onclick="handleLinkClick('about')" class="hover:text-white">ABOUT</a>
+                <a href="#contact" onclick="handleLinkClick('contact')" class="hover:text-white">CONTACT</a>
+            </div>
+            <p class="text-gray-600 text-[10px] mt-8">© 2024 Osaka Vibes.</p>
+        </div>
+    </footer>
+
+    <!-- === MODALS & FLOATING ELEMENTS === -->
+
+    <!-- PORTFOLIO LIGHTBOX (Hidden by default) -->
+    <div id="modal" class="fixed inset-0 z-[60] hidden transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="closeModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-white rounded-3xl overflow-hidden shadow-2xl md:grid md:grid-cols-2 max-h-[90vh]">
+            <img id="modal-img" src="" class="w-full h-[300px] md:h-full object-cover">
+            <div class="p-8 flex flex-col justify-center h-full overflow-y-auto">
+                <span id="modal-cat" class="text-osaka-red text-xs font-bold uppercase mb-2"></span>
+                <h3 id="modal-title" class="text-3xl font-black mb-4 leading-tight"></h3>
+                <p id="modal-desc" class="text-gray-600 text-sm leading-loose font-jp mb-6"></p>
+                <div class="mt-auto pt-6 border-t border-gray-100 flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Client Project</span>
+                    <button onclick="closeModal()" class="text-xs font-bold border-b border-black pb-1 hover:text-osaka-red hover:border-osaka-red transition-colors">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CONCIERGE -->
+    <button onclick="toggleChat()" id="chat-btn" class="fixed bottom-8 right-8 z-40 bg-osaka-black text-white w-14 h-14 rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 flex items-center justify-center group">
+        <!-- Sparkles Icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:text-osaka-red transition-colors"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path></svg>
+    </button>
+
+    <div id="chat-window" class="fixed bottom-8 right-8 z-50 w-[90vw] md:w-[380px] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-100 hidden">
+        <div class="bg-white p-5 flex justify-between items-center border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <div>
+                    <h3 class="font-bold text-sm text-osaka-black">Naniwa-chan AI</h3>
+                    <p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Concierge</p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-gray-400 hover:text-osaka-black"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-5 bg-osaka-light space-y-4">
+            <!-- Initial Message -->
+            <div class="flex justify-start">
+                <div class="w-6 h-6 rounded-full bg-osaka-black flex items-center justify-center text-white text-[10px] mr-2 flex-shrink-0 mt-1">AI</div>
+                <div class="max-w-[85%] p-4 text-sm leading-relaxed bg-white text-gray-700 rounded-2xl rounded-tl-sm shadow-sm font-jp">
+                    まいど！なにわちゃんやで！🐙<br>大阪のグルメや観光、お仕事の相談まで何でも聞いてな〜！
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-white border-t border-gray-100 flex gap-2">
+            <input type="text" id="chat-input" placeholder="Ask me anything..." class="flex-1 bg-osaka-light border-none rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-osaka-black font-jp" onkeypress="handleChatKey(event)">
+            <button onclick="sendChatMessage()" class="bg-osaka-black text-white p-3 rounded-full hover:bg-osaka-red transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- === JAVASCRIPT === -->
+    <script>
+        // --- DATA ---
+        const services = [
+            { title: "PR Promotion", desc: "Instagram/TikTokでの圧倒的なリーチ", price: "¥50,000~" },
+            { title: "Video Production", desc: "シネマティックな映像制作", price: "¥30,000~" },
+            { title: "SNS Consulting", desc: "アカウント運用・分析", price: "¥10,000/hr" },
+            { title: "Private Guide", desc: "メディア取材・VIPアテンド", price: "Contact" }
+        ];
+
+        const portfolio = [
+            { id: 1, title: "Neon Night Dotonbori", cat: "Tourism", img: "https://images.unsplash.com/photo-1590253230536-1e099689e472?q=80&w=2000&auto=format&fit=crop", desc: "道頓堀のネオン街をサイバーパンクな視点で切り取った観光PR。" },
+            { id: 2, title: "Takoyaki Soul", cat: "Gourmet", img: "https://images.unsplash.com/photo-1628151016027-a0680e90b82f?q=80&w=2000&auto=format&fit=crop", desc: "大阪のソウルフードのシズル感を極限まで引き出した動画。" },
+            { id: 3, title: "Luxury Stay", cat: "Hotel", img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2000&auto=format&fit=crop", desc: "梅田のラグジュアリーホテルのステイケーションPR。" },
+            { id: 4, title: "Deep Namba", cat: "Gourmet", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2000&auto=format&fit=crop", desc: "裏なんばの隠れ家バーをはしご酒。" }
+        ];
+
+        // --- ELEMENTS ---
+        const els = {
+            header: document.getElementById('main-header'),
+            logoText: document.getElementById('logo-text'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            menuIcon: document.getElementById('icon-menu'),
+            closeIcon: document.getElementById('icon-close'),
+            contactBtn: document.getElementById('contact-btn'),
+            servicesGrid: document.getElementById('services-grid'),
+            portfolioGrid: document.getElementById('portfolio-grid'),
+            modal: document.getElementById('modal'),
+            chatWindow: document.getElementById('chat-window'),
+            chatBtn: document.getElementById('chat-btn'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatInput: document.getElementById('chat-input')
+        };
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderServices();
+            renderPortfolio('All');
+            setupRouter();
+            setupScroll();
+        });
+
+        // --- ROUTING SYSTEM ---
+        function setupRouter() {
+            // Listen to hash changes
+            window.addEventListener('hashchange', handleRoute);
+            // Handle initial load
+            handleRoute();
+        }
+
+        // リンククリック時にハッシュを変更する関数
+        // これを経由することで、onclick属性で確実に動作させる
+        function handleLinkClick(pageName) {
+            window.location.hash = '#' + pageName;
+            closeMenu(); // モバイルメニューが開いていれば閉じる
+        }
+
+        function handleRoute() {
+            // Get hash or default to 'home'
+            let hash = window.location.hash.replace('#', '');
+            if (!hash) hash = 'home';
+
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show current page
+            const targetPage = document.getElementById('page-' + hash);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0); // Reset scroll to top
+            }
+
+            // Update Header Styles immediately
+            updateHeaderStyle(hash === 'home');
+        }
+
+        // --- NAVIGATION MENU ---
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                els.mobileMenu.classList.add('open');
+                els.menuIcon.classList.add('hidden');
+                els.closeIcon.classList.remove('hidden');
+            } else {
+                els.mobileMenu.classList.remove('open');
+                els.menuIcon.classList.remove('hidden');
+                els.closeIcon.classList.add('hidden');
+            }
+        }
+
+        function closeMenu() {
+            isMenuOpen = false;
+            els.mobileMenu.classList.remove('open');
+            els.menuIcon.classList.remove('hidden');
+            els.closeIcon.classList.add('hidden');
+        }
+
+        // --- SCROLL EFFECTS ---
+        function setupScroll() {
+            window.addEventListener('scroll', () => {
+                // If we are on the home page, adapt based on scroll
+                const isHome = !window.location.hash || window.location.hash === '#home';
+                updateHeaderStyle(isHome);
+            });
+        }
+
+        function updateHeaderStyle(isHome) {
+            const isScrolled = window.scrollY > 20;
+
+            if (isScrolled || !isHome || isMenuOpen) {
+                // Glass/White Mode
+                els.header.classList.add('glass-nav');
+                els.logoText.classList.remove('text-white');
+                els.logoText.classList.add('text-osaka-black');
+                
+                // Desktop Nav Links
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.remove('text-white/90');
+                    l.classList.add('text-osaka-black');
+                });
+
+                // Contact Button Inverse
+                els.contactBtn.classList.remove('bg-white', 'text-osaka-black');
+                els.contactBtn.classList.add('bg-osaka-black', 'text-white');
+
+            } else {
+                // Transparent Mode (Home Top)
+                els.header.classList.remove('glass-nav');
+                els.logoText.classList.add('text-white');
+                els.logoText.classList.remove('text-osaka-black');
+
+                // Desktop Nav Links
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.add('text-white/90');
+                    l.classList.remove('text-osaka-black');
+                });
+
+                // Contact Button Normal
+                els.contactBtn.classList.add('bg-white', 'text-osaka-black');
+                els.contactBtn.classList.remove('bg-osaka-black', 'text-white');
+            }
+        }
+
+        // --- RENDERING CONTENT ---
+        function renderServices() {
+            els.servicesGrid.innerHTML = services.map(s => `
+                <div class="bg-white p-8 rounded-3xl border border-transparent hover:border-gray-200 transition-all hover:shadow-xl flex flex-col md:flex-row justify-between gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">${s.title}</h3>
+                        <p class="text-gray-500 text-sm font-jp">${s.desc}</p>
+                    </div>
+                    <div class="text-right flex flex-col md:items-end justify-center">
+                        <span class="text-xl font-bold block">${s.price}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPortfolio(filter) {
+            const items = filter === 'All' ? portfolio : portfolio.filter(i => i.cat === filter);
+            els.portfolioGrid.innerHTML = items.map(item => `
+                <div class="group relative aspect-[4/3] bg-gray-100 cursor-pointer overflow-hidden rounded-lg" onclick="openModal(${item.id})">
+                    <img src="${item.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <span class="text-xs font-bold text-osaka-red uppercase">${item.cat}</span>
+                        <h4 class="text-xl font-bold">${item.title}</h4>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.cat === filter) {
+                    btn.className = "filter-btn bg-white text-osaka-black border border-white px-5 py-2 rounded-full text-xs font-bold transition-all";
+                } else {
+                    btn.className = "filter-btn bg-transparent border border-gray-700 text-gray-400 px-5 py-2 rounded-full text-xs font-bold hover:border-white hover:text-white transition-all";
+                }
+            });
+        }
+
+        // Attach filter clicks globally
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                renderPortfolio(e.target.dataset.cat);
+            });
+        });
+
+        // --- MODAL LOGIC ---
+        function openModal(id) {
+            const item = portfolio.find(i => i.id === id);
+            if(!item) return;
+            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-title').innerText = item.title;
+            document.getElementById('modal-cat').innerText = item.cat;
+            document.getElementById('modal-desc').innerText = item.desc;
+            els.modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            els.modal.classList.add('hidden');
+        }
+
+        // --- AI CHAT LOGIC (SIMULATED FOR HTML ONLY) ---
+        let isChatOpen = false;
+
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            if(isChatOpen) {
+                els.chatWindow.classList.remove('hidden');
+                els.chatBtn.classList.add('hidden');
+            } else {
+                els.chatWindow.classList.add('hidden');
+                els.chatBtn.classList.remove('hidden');
+            }
+        }
+
+        function handleChatKey(e) {
+            if(e.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const text = els.chatInput.value.trim();
+            if(!text) return;
+
+            // User Message
+            addMessage('user', text);
+            els.chatInput.value = '';
+
+            // Simulated AI Response
+            setTimeout(() => {
+                const response = getSimulatedResponse(text);
+                addMessage('ai', response);
+            }, 1000);
+        }
+
+        function addMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+            
+            let html = '';
+            if(role === 'ai') {
+                html += `<div class="w-6 h-6 rounded-full bg-osaka-black flex items-center justify-center text-white text-[10px] mr-2 flex-shrink-0 mt-1">AI</div>`;
+            }
+            
+            const bgClass = role === 'user' ? 'bg-osaka-black text-white rounded-tr-sm' : 'bg-white text-gray-700 rounded-tl-sm';
+            html += `<div class="max-w-[85%] p-4 text-sm leading-relaxed ${bgClass} rounded-2xl shadow-sm font-jp whitespace-pre-wrap">${text}</div>`;
+            
+            div.innerHTML = html;
+            els.chatMessages.appendChild(div);
+            els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
+        }
+
+        function getSimulatedResponse(input) {
+            input = input.toLowerCase();
+            if(input.includes('hello') || input.includes('こんにちは')) return "まいど！元気にしてるか？大阪のことなら何でも聞いてや！";
+            if(input.includes('料金') || input.includes('値段')) return "料金についてはSERVICESページを見てみてな！予算に合わせて相談乗るで〜。";
+            if(input.includes('グルメ') || input.includes('食べ物')) return "大阪いうたらやっぱ「粉もん」やけど、最近はスパイスカレーも熱いで！裏なんばも案内するで〜。";
+            if(input.includes('依頼') || input.includes('仕事')) return "おおきに！お仕事の相談はCONTACTページからメール送ってな！";
+            return "せやな〜、それはええ質問やな！詳しく教えるから、とりあえずCONTACTから連絡してーな！";
+        }
+
+    </script>
+</body>
 </html>
